@@ -12,7 +12,6 @@ from datetime import datetime
 
 app = Flask(__name__)
 CORS(app)
-
 MAIL_USER = os.environ.get('MAIL_USER')
 MAIL_PASS = os.environ.get('MAIL_PASS')
 HOCA_MAIL = os.environ.get('HOCA_MAIL')
@@ -76,7 +75,7 @@ def normallik_testi():
                 stat, p = stats.kstest(veri, 'norm', args=(np.mean(veri), np.std(veri)))
                 test_adi = "Kolmogorov-Smirnov"
 
-            normal = p > 0.05
+            normal = bool(p > 0.05)
             if not normal:
                 genel_normal = False
 
@@ -88,7 +87,7 @@ def normallik_testi():
                 "test": test_adi,
                 "istatistik": round(float(stat), 4),
                 "p_degeri": round(float(p), 4),
-                "normal": normal,
+                "normal": bool(normal),
                 "yorum": "Normal dağılım ✓" if normal else "Normal dağılım değil ✗"
             })
 
@@ -122,7 +121,7 @@ def normallik_testi():
 
         return jsonify({
             "basarili": True,
-            "genel_normal": genel_normal,
+            "genel_normal": bool(genel_normal),
             "kolonlar": sonuclar,
             "onerilen_testler": oneriler,
             "ozet": "Veriler normal dağılım gösteriyor." if genel_normal else "Veriler normal dağılım göstermiyor."
